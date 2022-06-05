@@ -9,12 +9,12 @@ export class Sprite {
     height: number
   ) {
     this.data = [
-      0, 0, 0,
-      0, height, 0,
-      width, height, 0,
-      width, height, 0,
-      width, 0.0, 0,
-      0.0, 0.0, 0,
+      0, 0, 0, 0, 0,
+      0, height, 0, 0, 1.0,
+      width, height, 0, 1.0, 1.0,
+      width, height, 0, 1.0, 1.0,
+      width, 0.0, 0, 1.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0
     ]
   }
 

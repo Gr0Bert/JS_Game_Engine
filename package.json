@@ -6,9 +6,10 @@
   "author": "",
   "browserslist": {},
   "scripts": {
+    "assets": " cp -r assets/ dist/",
     "build": "parcel build index.html",
     "dev": "parcel index.html --open",
-    "start": "npm run build && npm run dev",
+    "start": "npm run build && npm run assets && npm run dev",
     "t": "tsc"
   },
   "devDependencies": {
