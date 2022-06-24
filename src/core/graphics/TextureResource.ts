@@ -14,7 +14,7 @@ export class TextureUse {
       imageAsset.data
     )
 
-    if (this.isPowerOf2(imageAsset)) {
+    if (TextureUse.isPowerOf2(imageAsset)) {
       this.gl.generateMipmap(WebGLRenderingContext.TEXTURE_2D)
     } else {
       this.gl.texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_WRAP_S, WebGLRenderingContext.CLAMP_TO_EDGE)
@@ -23,11 +23,11 @@ export class TextureUse {
     }
   }
 
-  private isPowerOf2(imageAsset: ImageAsset): boolean {
-    return (this.isValuePowerOf2(imageAsset.width) && this.isValuePowerOf2(imageAsset.height))
+  private static isPowerOf2(imageAsset: ImageAsset): boolean {
+    return (TextureUse.isValuePowerOf2(imageAsset.width) && TextureUse.isValuePowerOf2(imageAsset.height))
   }
 
-  private isValuePowerOf2(value: number): boolean {
+  private static isValuePowerOf2(value: number): boolean {
     return (value & (value - 1)) == 0
   }
 }

@@ -4,7 +4,6 @@ import {AttributeInfo} from "./gl/AttributeInfo";
 import {Sprite} from "./graphics/Sprite";
 import {FragmentShaderSource, VertexShaderSource} from "./gl/Shader";
 import {Matrix4x4} from "./math/Matrix4x4";
-import {GLUtilities} from "./gl/GL";
 import {ImageAsset} from "./assets/ImageAsset";
 import {TextureResource} from "./graphics/TextureResource";
 import {SCORE_TEXTURE} from "../index";
@@ -43,7 +42,10 @@ const FRAGMENT_SHADER_SOURCE = new FragmentShaderSource(`
     `)
 
 export class Engine {
+  // @ts-ignore
   private shader: CompiledShader
+  // @ts-ignore
+  private projection: Matrix4x4
 
   public constructor(
     private assets: Record<string, ImageAsset>,
@@ -56,28 +58,28 @@ export class Engine {
     this.shader = new CompiledShader('basic', VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE, this.gl)
     this.shader.use()
 
-    const uTintLocation = this.shader.getUniformLocation('u_tint')
-    uTintLocation && this.gl.uniform4f(uTintLocation, 1, 1, 1, 1)
-
-    const projection = Matrix4x4.orthographic(0, GLUtilities.getCanvas().width, 0, GLUtilities.getCanvas().height, -100.0, 100)
-    const uProjectionLocation = this.shader.getUniformLocation('u_projection')
-    uProjectionLocation && this.gl.uniformMatrix4fv(uProjectionLocation, false, projection.toFloat32Array())
-
-    const uDiffuseLocation = this.shader.getUniformLocation('u_diffuse')
-    uDiffuseLocation && this.gl.uniform1i(uDiffuseLocation, 0)
-
     this.loop()
   }
 
   public loop(): void {
-    console.log('ERROR:',   this.gl.getError().toString(16))
+    console.log('ERROR:', this.gl.getError().toString(16))
     this.gl.clear(WebGLRenderingContext.COLOR_BUFFER_BIT)
+
+    const uProjectionLocation = this.shader.getUniformLocation('u_projection')
+    uProjectionLocation && this.gl.uniformMatrix4fv(uProjectionLocation, false, this.projection.toFloat32Array())
+
     const buffer = new PrimitiveGLBufferResource(VERTEX_SHADER_SOURCE.attributes, this.gl)
     buffer.use(buf => {
       new TextureResource(SCORE_TEXTURE, this.gl).use(texture => {
         const sprite = new Sprite(100, 100)
         texture.load(this.assets[SCORE_TEXTURE])
         buf.withData(sprite.getData())
+
+        const uDiffuseLocation = this.shader.getUniformLocation('u_diffuse')
+        uDiffuseLocation && this.gl.uniform1i(uDiffuseLocation, 0)
+
+        const uTintLocation = this.shader.getUniformLocation('u_tint')
+        uTintLocation && this.gl.uniform4f(uTintLocation, 1, 1, 1, 1)
 
         const positionMatrix = Matrix4x4.translation(sprite.getPosition()).toFloat32Array()
         const uModelLocation = this.shader.getUniformLocation('u_model')
@@ -91,5 +93,9 @@ export class Engine {
   }
 
   private logic(): void {
+  }
+
+  public resize(width: number, height: number): void {
+    this.projection = Matrix4x4.orthographic(0, width, height, 0, -100.0, 100)
   }
 }

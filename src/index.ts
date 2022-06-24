@@ -14,6 +14,18 @@ window.onload = () => {
       return acc;
     }, {})
     const engine = new Engine(assetsMap, GLUtilities.getGL(), (f) => requestAnimationFrame(f))
+
+    GLUtilities.getCanvas().width = window.innerWidth
+    GLUtilities.getCanvas().height = window.innerHeight
+    engine.resize(GLUtilities.getCanvas().width, GLUtilities.getCanvas().height)
+
+    window.onresize = () => {
+      GLUtilities.getCanvas().width = window.innerWidth
+      GLUtilities.getCanvas().height = window.innerHeight
+      GLUtilities.getGL().viewport(-1, 1, GLUtilities.getCanvas().width, GLUtilities.getCanvas().height)
+      engine.resize(GLUtilities.getCanvas().width, GLUtilities.getCanvas().height)
+    }
+
     engine.start()
     console.log(engine)
   }).catch(error => {
@@ -22,10 +34,5 @@ window.onload = () => {
 
 }
 
-window.onresize = () => {
-  GLUtilities.getCanvas().width = window.innerWidth
-  GLUtilities.getCanvas().height = window.innerHeight
-  GLUtilities.getGL().viewport(-1, 1, -1, 1)
-}
 
 export {}
